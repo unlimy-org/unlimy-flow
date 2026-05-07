@@ -1,9 +1,15 @@
 # unlimyFlow
 
-[![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
-[![CD](https://github.com/OWNER/REPO/actions/workflows/cd.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/cd.yml)
-![Python](https://img.shields.io/badge/python-3.11%2B-blue)
-![Docker](https://img.shields.io/badge/docker-ready-2496ED?logo=docker&logoColor=white)
+[![CI](https://github.com/unlimy-org/unlimy-flow/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/unlimy-org/unlimy-flow/actions/workflows/ci.yml)
+[![CD](https://github.com/unlimy-org/unlimy-flow/actions/workflows/cd.yml/badge.svg?branch=main)](https://github.com/unlimy-org/unlimy-flow/actions/workflows/cd.yml)
+![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)
+![Aiogram](https://img.shields.io/badge/Aiogram-3.x-2CA5E0?logo=telegram&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-API-412991?logo=openai&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-7-DC382D?logo=redis&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
+![CI Platform](https://img.shields.io/badge/CI-GitHub_Actions-2088FF?logo=githubactions&logoColor=white)
+![CD Strategy](https://img.shields.io/badge/CD-SSH_Deploy-0A0A0A?logo=github&logoColor=white)
 
 Production-ready Telegram-бот для редакционного пайплайна Unlimy: принимает новость, генерирует пост через LLM, отправляет на модерацию, публикует сразу или по расписанию.
 
