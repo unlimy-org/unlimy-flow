@@ -1,4 +1,4 @@
-﻿# unlimyFlow
+# unlimyFlow
 
 [![CI](https://github.com/unlimy-org/unlimy-flow/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/unlimy-org/unlimy-flow/actions/workflows/ci.yml)
 [![CD](https://github.com/unlimy-org/unlimy-flow/actions/workflows/cd.yml/badge.svg?branch=main)](https://github.com/unlimy-org/unlimy-flow/actions/workflows/cd.yml)
@@ -13,64 +13,56 @@
 
 ![UnlimyFlow Hero](assets/unlimyflow-hero.png)
 
-Production-ready Telegram-Р±РѕС‚ РґР»СЏ СЂРµРґР°РєС†РёРѕРЅРЅРѕРіРѕ РїР°Р№РїР»Р°Р№РЅР° Unlimy: РїСЂРёРЅРёРјР°РµС‚ РЅРѕРІРѕСЃС‚СЊ, РіРµРЅРµСЂРёСЂСѓРµС‚ РїРѕСЃС‚ С‡РµСЂРµР· LLM, РѕС‚РїСЂР°РІР»СЏРµС‚ РЅР° РјРѕРґРµСЂР°С†РёСЋ, РїСѓР±Р»РёРєСѓРµС‚ СЃСЂР°Р·Сѓ РёР»Рё РїРѕ СЂР°СЃРїРёСЃР°РЅРёСЋ.
+Telegram-бот для редакционного пайплайна Unlimy: принимает новость, генерирует пост, валидирует, отправляет на модерацию, публикует сразу или по расписанию.
 
-## РљР»СЋС‡РµРІС‹Рµ РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё
-- Р“РµРЅРµСЂР°С†РёСЏ РїРѕСЃС‚РѕРІ С‡РµСЂРµР· OpenAI (`generate -> rule-based validate -> critic`).
-- РћС‡РёСЃС‚РєР° РїРµСЂРµСЃР»Р°РЅРЅС‹С… СЃРѕРѕР±С‰РµРЅРёР№ РѕС‚ СЃСЃС‹Р»РѕС‡РЅРѕРіРѕ/СЂРµРєР»Р°РјРЅРѕРіРѕ РјСѓСЃРѕСЂР°.
-- Р РµР¶РёРјС‹ РїСѓР±Р»РёРєР°С†РёРё:
-  - `instant` вЂ” РїСѓР±Р»РёРєР°С†РёСЏ СЃСЂР°Р·Сѓ РІ РєР°РЅР°Р».
-  - `queue` вЂ” РїСЂРµРґРїСЂРѕСЃРјРѕС‚СЂ Рё РјРѕРґРµСЂР°С†РёСЏ.
-- РњРѕРґРµСЂР°С†РёСЏ С‡РµСЂРµР· inline-РєРЅРѕРїРєРё:
-  - `РћРїСѓР±Р»РёРєРѕРІР°С‚СЊ СЃРµР№С‡Р°СЃ`
-  - `РџРµСЂРµРіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ`
-  - `Р—Р°РїР»Р°РЅРёСЂРѕРІР°С‚СЊ` (РёРЅС‚РµСЂРІР°Р»С‹, РґРµРЅСЊ, РІСЂРµРјСЏ)
-  - `РћС‚РјРµРЅР°`
-- Р¤РѕРЅРѕРІС‹Р№ РІРѕСЂРєРµСЂ РѕС‚Р»РѕР¶РµРЅРЅС‹С… РїСѓР±Р»РёРєР°С†РёР№.
-- `/scheduled` вЂ” РїСЂРѕСЃРјРѕС‚СЂ Рё РѕС‚РјРµРЅР° Р·Р°РїР»Р°РЅРёСЂРѕРІР°РЅРЅС‹С… РїРѕСЃС‚РѕРІ.
-- PostgreSQL РґР»СЏ РёСЃС‚РѕСЂРёРё Рё РѕС‡РµСЂРµРґРµР№.
-- Redis РґР»СЏ РІСЂРµРјРµРЅРЅС‹С… РєР»СЋС‡РµР№ Рё С„Р»Р°РіРѕРІ.
-- Р›РѕРіРёСЂРѕРІР°РЅРёРµ РІ С„Р°Р№Р» + stdout.
+## Возможности
+- LLM-пайплайн: `generate -> rule-based validation -> critic pass`.
+- Очистка пересланных сообщений от рекламных/ссылочных хвостов.
+- Режимы публикации:
+  - `instant` — публикация сразу в канал.
+  - `queue` — предпросмотр и модерация.
+- Модерация через inline-кнопки:
+  - Опубликовать сейчас
+  - Перегенерировать
+  - Запланировать (интервалы + выбор дня/времени)
+  - Отмена
+- Фоновый воркер отложенных публикаций.
+- Команда `/scheduled` для просмотра и отмены запланированных постов.
+- PostgreSQL для истории и очередей.
+- Redis для временных ключей, флагов и счётчиков.
 
-## РђСЂС…РёС‚РµРєС‚СѓСЂР°
-- `main.py` вЂ” Р·Р°РїСѓСЃРє Р±РѕС‚Р°, DI Р·Р°РІРёСЃРёРјРѕСЃС‚РµР№, РІРѕСЂРєРµСЂ scheduled-РїСѓР±Р»РёРєР°С†РёР№.
-- `handlers.py` вЂ” РєРѕРјР°РЅРґС‹, СЃРѕРѕР±С‰РµРЅРёСЏ, callback-Р»РѕРіРёРєР°.
-- `llm.py` вЂ” РіРµРЅРµСЂР°С‚РѕСЂ, rule-based РІР°Р»РёРґР°С‚РѕСЂ, critic-pass.
-- `formatter.py` вЂ” С„РёРЅР°Р»СЊРЅС‹Р№ СЂРµРЅРґРµСЂ РїРѕРґ Telegram HTML.
-- `db.py` вЂ” asyncpg-СЃР»РѕР№ (posts + scheduled_posts).
-- `redis_client.py` вЂ” pending РїРѕСЃС‚С‹/СЂРµР¶РёРј/СЃС‡РµС‚С‡РёРєРё.
-- `cleaner.py` вЂ” РѕС‡РёСЃС‚РєР° С„РѕСЂРІР°СЂРґРѕРІ.
-- `keyboards.py` вЂ” inline-РєР»Р°РІРёР°С‚СѓСЂС‹ РјРѕРґРµСЂР°С†РёРё Рё СЂР°СЃРїРёСЃР°РЅРёСЏ.
-- `config.py` вЂ” env-РєРѕРЅС„РёРі.
+## Структура проекта
+- `main.py` — точка входа, wiring зависимостей, scheduled worker.
+- `handlers.py` — команды, сообщения, callback-сценарии.
+- `llm.py` — генерация, валидация, критик.
+- `formatter.py` — финальный рендер поста под Telegram HTML.
+- `db.py` — слой доступа к PostgreSQL.
+- `redis_client.py` — слой доступа к Redis.
+- `cleaner.py` — очистка текста форвардов.
+- `keyboards.py` — inline-клавиатуры.
+- `config.py` — конфиг из переменных окружения.
 
-## РўСЂРµР±РѕРІР°РЅРёСЏ
-- Python 3.11+
-- PostgreSQL 14+
-- Redis 6+
-- OpenAI API key
-
-## Р‘С‹СЃС‚СЂС‹Р№ СЃС‚Р°СЂС‚ (Р»РѕРєР°Р»СЊРЅРѕ)
-1. РЈСЃС‚Р°РЅРѕРІРёС‚Рµ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё:
+## Локальный запуск
+1. Установите зависимости:
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
-2. РџРѕРґРЅРёРјРёС‚Рµ Р‘Р”/Redis:
+2. Поднимите локальные сервисы:
 ```bash
 docker compose up -d
 ```
-3. РџРѕРґРіРѕС‚РѕРІСЊС‚Рµ env:
+3. Создайте `.env`:
 ```bash
 cp .env.example .env
 ```
-4. Р—Р°РїСѓСЃС‚РёС‚Рµ Р±РѕС‚Р°:
+4. Запустите бота:
 ```bash
 python main.py
 ```
 
-## РџРµСЂРµРјРµРЅРЅС‹Рµ РѕРєСЂСѓР¶РµРЅРёСЏ
-РњРёРЅРёРјР°Р»СЊРЅРѕ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ:
+## Обязательные переменные окружения
 - `BOT_TOKEN`
 - `OWNER_ID`
 - `CHANNEL_ID`
@@ -78,21 +70,18 @@ python main.py
 - `PG_DSN`
 - `REDIS_URL`
 
-LLM-РїР°СЂР°РјРµС‚СЂС‹:
-- `OPENAI_MODEL` (default `gpt-4o-mini`)
-- `OPENAI_MODEL_CRITIC` (default = `OPENAI_MODEL`)
+Дополнительно:
+- `OPENAI_MODEL`
+- `OPENAI_MODEL_CRITIC`
 - `TEMPERATURE_GENERATOR`
 - `TEMPERATURE_CRITIC`
 - `MAX_TOKENS_GENERATOR`
 - `MAX_TOKENS_CRITIC`
 - `MAX_RETRIES`
+- `PUBLISH_MODE`
+- `CUSTOM_STAR_EMOJI_ID`
 
-РџСЂРѕС‡РµРµ:
-- `PUBLISH_MODE` (`instant` / `queue`)
-- `LOG_DIR`
-- `CUSTOM_STAR_EMOJI_ID` (РѕРїС†РёРѕРЅР°Р»СЊРЅРѕ, custom emoji РґР»СЏ CTA)
-
-## РљРѕРјР°РЅРґС‹ Р±РѕС‚Р°
+## Команды бота
 - `/start`
 - `/help`
 - `/mode`
@@ -100,51 +89,44 @@ LLM-РїР°СЂР°РјРµС‚СЂС‹:
 - `/history`
 - `/scheduled`
 
-## Production Deploy (VPS, Docker Compose)
-### 1) РџРѕРґРіРѕС‚РѕРІРєР° СЃРµСЂРІРµСЂР°
-- Ubuntu 22.04+ (СЂРµРєРѕРјРµРЅРґСѓРµС‚СЃСЏ)
-- РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Docker + Compose plugin
-- РћС‚РєСЂС‹С‚СЊ firewall РґР»СЏ SSH
-
-### 2) РљР»РѕРЅРёСЂРѕРІР°РЅРёРµ Рё env
+## Деплой на VPS (production)
+1. Клонируйте репозиторий:
 ```bash
-git clone <your-repo-url> ~/unlimyFlow
+git clone <repo-url> ~/unlimyFlow
 cd ~/unlimyFlow
+```
+2. Подготовьте env:
+```bash
 cp deploy/.env.prod.example .env.prod
 ```
-Р—Р°РїРѕР»РЅРёС‚Рµ `.env.prod`.
-
-### 3) Р—Р°РїСѓСЃРє
+3. Запустите стек:
 ```bash
 docker compose -f deploy/docker-compose.prod.yml --env-file .env.prod up -d --build
 ```
 
-### 4) РћР±РЅРѕРІР»РµРЅРёРµ
+## Деплой staging
 ```bash
-git pull
-docker compose -f deploy/docker-compose.prod.yml --env-file .env.prod up -d --build
+cp deploy/.env.staging.example .env.staging
+docker compose -f deploy/docker-compose.staging.yml --env-file .env.staging up -d --build
 ```
 
 ## CI/CD
-Р РµРїРѕР·РёС‚РѕСЂРёР№ СЃРѕРґРµСЂР¶РёС‚ GitHub Actions:
-- `CI` (`.github/workflows/ci.yml`)
-  - СѓСЃС‚Р°РЅРѕРІРєР° Р·Р°РІРёСЃРёРјРѕСЃС‚РµР№
-  - РїСЂРѕРІРµСЂРєР° РёРјРїРѕСЂС‚Р°/СЃРёРЅС‚Р°РєСЃРёСЃР° (`compileall`)
-- `CD` (`.github/workflows/cd.yml`)
-  - РґРµРїР»РѕР№ РЅР° VPS РїРѕ SSH РїСЂРё push РІ `main` РёР»Рё РІСЂСѓС‡РЅСѓСЋ.
+- CI: `.github/workflows/ci.yml`
+  - установка зависимостей
+  - проверка синтаксиса (`compileall`)
+- CD: `.github/workflows/cd.yml`
+  - деплой по SSH на VPS при push в `main`
 
-### Secrets РґР»СЏ CD
-Р”РѕР±Р°РІСЊС‚Рµ РІ GitHub repository secrets:
+Secrets для GitHub:
 - `VPS_HOST`
 - `VPS_USER`
 - `VPS_SSH_KEY`
-- `VPS_PORT` (РѕРїС†РёРѕРЅР°Р»СЊРЅРѕ, default `22`)
-- `VPS_APP_DIR` (РѕРїС†РёРѕРЅР°Р»СЊРЅРѕ, default `~/unlimyFlow`)
+- `VPS_PORT` (опционально)
+- `VPS_APP_DIR` (опционально)
 
-## РќР°Р±Р»СЋРґР°РµРјРѕСЃС‚СЊ
-- Р›РѕРіРё: `logs/unlimy_flow.log`
-- РџСЂРѕРІРµСЂРєР° РєРѕРЅС‚РµР№РЅРµСЂРѕРІ:
+## Полезные команды
 ```bash
 docker compose -f deploy/docker-compose.prod.yml --env-file .env.prod ps
 docker compose -f deploy/docker-compose.prod.yml --env-file .env.prod logs -f bot
 ```
+
