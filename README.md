@@ -1,5 +1,10 @@
 # unlimyFlow
 
+[![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
+[![CD](https://github.com/OWNER/REPO/actions/workflows/cd.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/cd.yml)
+![Python](https://img.shields.io/badge/python-3.11%2B-blue)
+![Docker](https://img.shields.io/badge/docker-ready-2496ED?logo=docker&logoColor=white)
+
 Production-ready Telegram-бот для редакционного пайплайна Unlimy: принимает новость, генерирует пост через LLM, отправляет на модерацию, публикует сразу или по расписанию.
 
 ## Ключевые возможности
@@ -135,9 +140,3 @@ docker compose -f deploy/docker-compose.prod.yml --env-file .env.prod up -d --bu
 docker compose -f deploy/docker-compose.prod.yml --env-file .env.prod ps
 docker compose -f deploy/docker-compose.prod.yml --env-file .env.prod logs -f bot
 ```
-
-## Безопасность
-- Никогда не коммитьте `.env`.
-- Регулярно ротируйте `OPENAI_API_KEY` и `BOT_TOKEN`.
-- Давайте боту только необходимые права в канале.
-
