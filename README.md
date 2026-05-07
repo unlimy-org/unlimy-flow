@@ -11,54 +11,49 @@
 ![CI Platform](https://img.shields.io/badge/CI-GitHub_Actions-2088FF?logo=githubactions&logoColor=white)
 ![CD Strategy](https://img.shields.io/badge/CD-SSH_Deploy-0A0A0A?logo=github&logoColor=white)
 
-Production-ready Telegram-бот для редакционного пайплайна Unlimy: принимает новость, генерирует пост через LLM, отправляет на модерацию, публикует сразу или по расписанию.
+![UnlimyFlow Hero](assets/unlimyflow-hero.png)
 
-## Ключевые возможности
-- Генерация постов через OpenAI (`generate -> rule-based validate -> critic`).
-- Очистка пересланных сообщений от ссылочного/рекламного мусора.
+Telegram-бот для редакционного пайплайна Unlimy: принимает новость, генерирует пост, валидирует, отправляет на модерацию, публикует сразу или по расписанию.
+
+## Возможности
+- LLM-пайплайн: `generate -> rule-based validation -> critic pass`.
+- Очистка пересланных сообщений от рекламных/ссылочных хвостов.
 - Режимы публикации:
   - `instant` — публикация сразу в канал.
   - `queue` — предпросмотр и модерация.
 - Модерация через inline-кнопки:
-  - `Опубликовать сейчас`
-  - `Перегенерировать`
-  - `Запланировать` (интервалы, день, время)
-  - `Отмена`
+  - Опубликовать сейчас
+  - Перегенерировать
+  - Запланировать (интервалы + выбор дня/времени)
+  - Отмена
 - Фоновый воркер отложенных публикаций.
-- `/scheduled` — просмотр и отмена запланированных постов.
+- Команда `/scheduled` для просмотра и отмены запланированных постов.
 - PostgreSQL для истории и очередей.
-- Redis для временных ключей и флагов.
-- Логирование в файл + stdout.
+- Redis для временных ключей, флагов и счётчиков.
 
-## Архитектура
-- `main.py` — запуск бота, DI зависимостей, воркер scheduled-публикаций.
-- `handlers.py` — команды, сообщения, callback-логика.
-- `llm.py` — генератор, rule-based валидатор, critic-pass.
-- `formatter.py` — финальный рендер под Telegram HTML.
-- `db.py` — asyncpg-слой (posts + scheduled_posts).
-- `redis_client.py` — pending посты/режим/счетчики.
-- `cleaner.py` — очистка форвардов.
-- `keyboards.py` — inline-клавиатуры модерации и расписания.
-- `config.py` — env-конфиг.
+## Структура проекта
+- `main.py` — точка входа, wiring зависимостей, scheduled worker.
+- `handlers.py` — команды, сообщения, callback-сценарии.
+- `llm.py` — генерация, валидация, критик.
+- `formatter.py` — финальный рендер поста под Telegram HTML.
+- `db.py` — слой доступа к PostgreSQL.
+- `redis_client.py` — слой доступа к Redis.
+- `cleaner.py` — очистка текста форвардов.
+- `keyboards.py` — inline-клавиатуры.
+- `config.py` — конфиг из переменных окружения.
 
-## Требования
-- Python 3.11+
-- PostgreSQL 14+
-- Redis 6+
-- OpenAI API key
-
-## Быстрый старт (локально)
+## Локальный запуск
 1. Установите зависимости:
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
-2. Поднимите БД/Redis:
+2. Поднимите локальные сервисы:
 ```bash
 docker compose up -d
 ```
-3. Подготовьте env:
+3. Создайте `.env`:
 ```bash
 cp .env.example .env
 ```
@@ -67,8 +62,7 @@ cp .env.example .env
 python main.py
 ```
 
-## Переменные окружения
-Минимально обязательные:
+## Обязательные переменные окружения
 - `BOT_TOKEN`
 - `OWNER_ID`
 - `CHANNEL_ID`
@@ -76,19 +70,16 @@ python main.py
 - `PG_DSN`
 - `REDIS_URL`
 
-LLM-параметры:
-- `OPENAI_MODEL` (default `gpt-4o-mini`)
-- `OPENAI_MODEL_CRITIC` (default = `OPENAI_MODEL`)
+Дополнительно:
+- `OPENAI_MODEL`
+- `OPENAI_MODEL_CRITIC`
 - `TEMPERATURE_GENERATOR`
 - `TEMPERATURE_CRITIC`
 - `MAX_TOKENS_GENERATOR`
 - `MAX_TOKENS_CRITIC`
 - `MAX_RETRIES`
-
-Прочее:
-- `PUBLISH_MODE` (`instant` / `queue`)
-- `LOG_DIR`
-- `CUSTOM_STAR_EMOJI_ID` (опционально, custom emoji для CTA)
+- `PUBLISH_MODE`
+- `CUSTOM_STAR_EMOJI_ID`
 
 ## Команды бота
 - `/start`
@@ -98,51 +89,44 @@ LLM-параметры:
 - `/history`
 - `/scheduled`
 
-## Production Deploy (VPS, Docker Compose)
-### 1) Подготовка сервера
-- Ubuntu 22.04+ (рекомендуется)
-- Установить Docker + Compose plugin
-- Открыть firewall для SSH
-
-### 2) Клонирование и env
+## Деплой на VPS (production)
+1. Клонируйте репозиторий:
 ```bash
-git clone <your-repo-url> ~/unlimyFlow
+git clone <repo-url> ~/unlimyFlow
 cd ~/unlimyFlow
+```
+2. Подготовьте env:
+```bash
 cp deploy/.env.prod.example .env.prod
 ```
-Заполните `.env.prod`.
-
-### 3) Запуск
+3. Запустите стек:
 ```bash
 docker compose -f deploy/docker-compose.prod.yml --env-file .env.prod up -d --build
 ```
 
-### 4) Обновление
+## Деплой staging
 ```bash
-git pull
-docker compose -f deploy/docker-compose.prod.yml --env-file .env.prod up -d --build
+cp deploy/.env.staging.example .env.staging
+docker compose -f deploy/docker-compose.staging.yml --env-file .env.staging up -d --build
 ```
 
 ## CI/CD
-Репозиторий содержит GitHub Actions:
-- `CI` (`.github/workflows/ci.yml`)
+- CI: `.github/workflows/ci.yml`
   - установка зависимостей
-  - проверка импорта/синтаксиса (`compileall`)
-- `CD` (`.github/workflows/cd.yml`)
-  - деплой на VPS по SSH при push в `main` или вручную.
+  - проверка синтаксиса (`compileall`)
+- CD: `.github/workflows/cd.yml`
+  - деплой по SSH на VPS при push в `main`
 
-### Secrets для CD
-Добавьте в GitHub repository secrets:
+Secrets для GitHub:
 - `VPS_HOST`
 - `VPS_USER`
 - `VPS_SSH_KEY`
-- `VPS_PORT` (опционально, default `22`)
-- `VPS_APP_DIR` (опционально, default `~/unlimyFlow`)
+- `VPS_PORT` (опционально)
+- `VPS_APP_DIR` (опционально)
 
-## Наблюдаемость
-- Логи: `logs/unlimy_flow.log`
-- Проверка контейнеров:
+## Полезные команды
 ```bash
 docker compose -f deploy/docker-compose.prod.yml --env-file .env.prod ps
 docker compose -f deploy/docker-compose.prod.yml --env-file .env.prod logs -f bot
 ```
+
